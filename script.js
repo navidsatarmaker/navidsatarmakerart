@@ -34,13 +34,14 @@ const artworks = [
     alt: "Surreal artwork 3",
     width: 1200,
     height: 1600,
-    bgLight: "#f7eeed",
-    bgDark: "#1b1616",
+    bgLight: "#efebe7",
+    bgDark: "#171515",
     versions: [
       "images/artwork-3-main.webp",
       "images/artwork-3-v1.webp",
       "images/artwork-3-v2.webp",
-      "images/artwork-3-v3.webp"
+      "images/artwork-3-v3.webp",
+      "images/artwork-3-v4.webp"
     ]
   },
   {
@@ -240,10 +241,54 @@ function setupThemeToggle() {
   });
 }
 
+// Setup timelapse video autoplay on scroll and tap pause/play
+function setupTimelapseVideo() {
+  const video = document.getElementById("timelapse-video");
+  if (!video) return;
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // If user prefers reduced motion, do not autoplay, keep poster visible
+  if (!prefersReducedMotion) {
+    const videoObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(() => {
+                // Autoplay was prevented (e.g. browser policy)
+              });
+            }
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0.5
+      }
+    );
+
+    videoObserver.observe(video);
+  }
+
+  // Tapping or clicking toggles pause/play
+  video.addEventListener("click", () => {
+    if (video.paused) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  });
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
   renderGallery();
   setupThemeToggle();
   setupScrollObserver();
+  setupTimelapseVideo();
   preloadVariants();
 });

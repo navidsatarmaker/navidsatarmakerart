@@ -189,6 +189,30 @@ body {
 }
 
 /* -------------------------------------------------------------
+   Timelapse Video Section
+   ------------------------------------------------------------- */
+.video-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.timelapse-video {
+  max-width: 88vw;
+  max-height: 78vh;
+  max-height: 78dvh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 2px;
+}
+
+/* -------------------------------------------------------------
    Contact Footer
    ------------------------------------------------------------- */
 .contact-footer {

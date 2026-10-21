@@ -4,6 +4,13 @@
 /[0-9]*.JPG
 /[0-9]*.jpg
 
+# Original video source files
+/*.MOV
+/*.mov
+/*.MP4
+/*.mp4
+!/videos/timelapse.mp4
+
 # Operating System Files
 .DS_Store
 Thumbs.db
