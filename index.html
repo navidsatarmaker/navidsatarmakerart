@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,19 +9,62 @@
   <!-- Open Graph Preview -->
   <meta property="og:title" content="Portfolio | Navid Satarmaker">
   <meta property="og:description" content="Surreal art portfolio by Navid Satarmaker.">
-  <meta property="og:image" content="images/artwork-1-main.webp">
+  <meta property="og:url" content="https://navidsatarmakerart.netlify.app/">
+  <meta property="og:image" content="https://navidsatarmakerart.netlify.app/images/artwork-1-main.webp">
   <meta property="og:type" content="website">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Portfolio | Navid Satarmaker">
+  <meta name="twitter:description" content="Surreal art portfolio by Navid Satarmaker.">
+  <meta name="twitter:image" content="https://navidsatarmakerart.netlify.app/images/artwork-1-main.webp">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png">
 
+  <!-- Apply saved theme before first paint to prevent flash -->
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem("theme");
+        var theme = savedTheme === "dark" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-theme="light">
+<body>
 
-  <!-- Temporary theme switcher to test light & dark modes (removable for final release) -->
-  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">
-    <span class="theme-label">Theme</span>
+  <!-- Icon-only theme switch -->
+  <button
+    id="theme-toggle"
+    class="theme-toggle"
+    type="button"
+    role="switch"
+    aria-checked="false"
+    aria-label="Toggle dark mode"
+  >
+    <span class="switch-track">
+      <!-- Sun icon (Light mode) -->
+      <span class="switch-icon icon-sun" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+      </span>
+      <!-- Moon icon (Dark mode) -->
+      <span class="switch-icon icon-moon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </span>
+      <!-- Sliding knob -->
+      <span class="switch-thumb"></span>
+    </span>
   </button>
 
   <main id="gallery" class="gallery">

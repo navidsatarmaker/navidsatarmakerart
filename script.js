@@ -222,7 +222,7 @@ function setupScrollObserver() {
   if (!sections.length) return;
 
   const updateBackground = (section) => {
-    const isDark = document.body.getAttribute("data-theme") === "dark";
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
     const targetBg = isDark ? section.dataset.bgDark : section.dataset.bgLight;
     if (targetBg) {
       document.body.style.setProperty("--bg-current", targetBg);
@@ -246,21 +246,32 @@ function setupScrollObserver() {
   sections.forEach((sec) => observer.observe(sec));
 }
 
-// Theme toggle button setup (allows switching between light & dark previews)
+// Theme toggle button setup (accessible switch with localStorage support)
 function setupThemeToggle() {
   const toggleBtn = document.getElementById("theme-toggle");
   if (!toggleBtn) return;
 
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const initialTheme = prefersDark ? "dark" : "light";
-  document.body.setAttribute("data-theme", initialTheme);
-  toggleBtn.querySelector(".theme-label").textContent = initialTheme === "dark" ? "Dark" : "Light";
+  // Retrieve theme from localStorage; default to light
+  let currentTheme = "light";
+  try {
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") {
+      currentTheme = saved;
+    }
+  } catch (e) {
+    currentTheme = "light";
+  }
 
-  toggleBtn.addEventListener("click", () => {
-    const currentTheme = document.body.getAttribute("data-theme");
-    const nextTheme = currentTheme === "dark" ? "light" : "dark";
-    document.body.setAttribute("data-theme", nextTheme);
-    toggleBtn.querySelector(".theme-label").textContent = nextTheme === "dark" ? "Dark" : "Light";
+  // Set theme on html
+  document.documentElement.setAttribute("data-theme", currentTheme);
+  toggleBtn.setAttribute("aria-checked", currentTheme === "dark" ? "true" : "false");
+
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute("data-theme", theme);
+    toggleBtn.setAttribute("aria-checked", theme === "dark" ? "true" : "false");
+    try {
+      localStorage.setItem("theme", theme);
+    } catch (e) {}
 
     // Re-check current visible artwork to apply matching muted tint
     const viewportMiddle = window.innerHeight / 2;
@@ -271,11 +282,17 @@ function setupThemeToggle() {
     }) || sections[0];
 
     if (activeSection) {
-      const targetBg = nextTheme === "dark" ? activeSection.dataset.bgDark : activeSection.dataset.bgLight;
+      const targetBg = theme === "dark" ? activeSection.dataset.bgDark : activeSection.dataset.bgLight;
       if (targetBg) {
         document.body.style.setProperty("--bg-current", targetBg);
       }
     }
+  };
+
+  toggleBtn.addEventListener("click", () => {
+    const activeTheme = document.documentElement.getAttribute("data-theme");
+    const nextTheme = activeTheme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
   });
 }
 

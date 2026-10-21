@@ -6,21 +6,39 @@
   --bg-light: #f4f1ec;
   --bg-dark: #16161a;
   --text-light: rgba(22, 22, 26, 0.4);
-  --text-dark: rgba(244, 241, 236, 0.4);
+  --text-dark: #e6e3dd;
   --dot-light: rgba(22, 22, 26, 0.25);
   --dot-active-light: rgba(22, 22, 26, 0.65);
-  --dot-dark: rgba(244, 241, 236, 0.25);
-  --dot-active-dark: rgba(244, 241, 236, 0.7);
+  --dot-dark: rgba(230, 227, 221, 0.25);
+  --dot-active-dark: rgba(230, 227, 221, 0.7);
 
   /* Email link color */
-  --email-color: #4a4a4a;
+  --email-color-light: #4a4a4a;
+  --email-color-dark: #e6e3dd;
+
+  /* Switch colors */
+  --switch-track-border-light: rgba(22, 22, 26, 0.15);
+  --switch-track-bg-light: rgba(22, 22, 26, 0.05);
+  --switch-thumb-light: #ffffff;
+  --switch-icon-light: rgba(22, 22, 26, 0.5);
+
+  --switch-track-border-dark: rgba(230, 227, 221, 0.2);
+  --switch-track-bg-dark: rgba(230, 227, 221, 0.08);
+  --switch-thumb-dark: #2a2a30;
+  --switch-icon-dark: rgba(230, 227, 221, 0.6);
 
   /* Current active theme colors */
   --bg-base: var(--bg-light);
   --bg-current: var(--bg-light);
   --text-muted: var(--text-light);
+  --email-color: var(--email-color-light);
   --dot-color: var(--dot-light);
   --dot-active: var(--dot-active-light);
+
+  --switch-track-border: var(--switch-track-border-light);
+  --switch-track-bg: var(--switch-track-bg-light);
+  --switch-thumb: var(--switch-thumb-light);
+  --switch-icon: var(--switch-icon-light);
 
   --transition-bg: background-color 1.2s cubic-bezier(0.25, 1, 0.5, 1);
   --transition-crossfade: opacity 800ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -30,8 +48,14 @@
   --bg-base: var(--bg-dark);
   --bg-current: var(--bg-dark);
   --text-muted: var(--text-dark);
+  --email-color: var(--email-color-dark);
   --dot-color: var(--dot-dark);
   --dot-active: var(--dot-active-dark);
+
+  --switch-track-border: var(--switch-track-border-dark);
+  --switch-track-bg: var(--switch-track-bg-dark);
+  --switch-thumb: var(--switch-thumb-dark);
+  --switch-icon: var(--switch-icon-dark);
 }
 
 /* -------------------------------------------------------------
@@ -61,30 +85,87 @@ body {
 }
 
 /* -------------------------------------------------------------
-   Temporary Theme Switcher (for previewing light vs dark)
+   Theme Switch (Accessible Icon-only Pill)
    ------------------------------------------------------------- */
 .theme-toggle {
   position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: max(1.25rem, env(safe-area-inset-top, 0px) + 0.75rem);
+  right: max(1.25rem, env(safe-area-inset-right, 0px) + 0.75rem);
   z-index: 100;
   background: transparent;
-  border: 1px solid var(--text-muted);
-  color: var(--text-muted);
-  padding: 0.35rem 0.75rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-radius: 9999px;
+  border: none;
+  padding: 8px; /* Expands 52x28 visual size to 68x44 tap target */
   cursor: pointer;
-  opacity: 0.4;
-  transition: opacity 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.theme-toggle:hover,
-.theme-toggle:focus-visible {
+.switch-track {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background-color: var(--switch-track-bg);
+  border: 1px solid var(--switch-track-border);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  box-sizing: border-box;
+  transition: background-color 250ms ease, border-color 250ms ease;
+}
+
+.switch-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--switch-icon);
+  z-index: 1;
+  pointer-events: none;
+  transition: color 250ms ease, opacity 250ms ease;
+}
+
+.icon-sun {
   opacity: 0.9;
-  outline: none;
+}
+
+.icon-moon {
+  opacity: 0.4;
+}
+
+[data-theme="dark"] .icon-sun {
+  opacity: 0.4;
+}
+
+[data-theme="dark"] .icon-moon {
+  opacity: 0.9;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background-color: var(--switch-thumb);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Slide thumb to the right in dark mode */
+[data-theme="dark"] .switch-thumb {
+  transform: translateX(24px);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--email-color);
+  outline-offset: 2px;
 }
 
 /* -------------------------------------------------------------
@@ -314,7 +395,10 @@ body {
   body,
   .artwork-img,
   .variant-dot,
-  .artwork-section:first-child .artwork-stage {
+  .artwork-section:first-child .artwork-stage,
+  .switch-thumb,
+  .switch-track,
+  .switch-icon {
     transition: none !important;
     animation: none !important;
   }
