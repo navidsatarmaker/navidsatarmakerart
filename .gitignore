@@ -9,7 +9,8 @@
 /*.mov
 /*.MP4
 /*.mp4
-!/videos/timelapse.mp4
+!/videos/*.mp4
+!/videos/*.webp
 
 # Operating System Files
 .DS_Store

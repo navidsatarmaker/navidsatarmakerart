@@ -94,14 +94,66 @@ body {
 }
 
 .artwork-section {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 88vh;
+  min-height: 88dvh;
+  min-height: 88svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 6vh 6vw;
+  padding: 5vh 6vw;
   position: relative;
+}
+
+/* Scroll cue indicator on the first artwork */
+.scroll-cue {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-muted);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  animation: cueFadeIn 1s ease 2s forwards, cueBob 3s ease-in-out 3s infinite;
+  transition: opacity 400ms ease;
+}
+
+.scroll-cue.is-hidden {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.scroll-cue svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.45;
+}
+
+@keyframes cueFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cueBob {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 7px);
+  }
 }
 
 /* Initial gentle fade-in for the very first artwork */
@@ -248,5 +300,11 @@ body {
   .artwork-section:first-child .artwork-stage {
     transition: none !important;
     animation: none !important;
+  }
+
+  .scroll-cue {
+    opacity: 0.45 !important;
+    animation: none !important;
+    transition: none !important;
   }
 }

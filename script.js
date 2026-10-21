@@ -69,6 +69,30 @@ const artworks = [
   }
 ];
 
+// Timelapses playlist configuration
+const timelapses = [
+  {
+    src: "videos/timelapse-1.mp4",
+    poster: "videos/timelapse-poster-1.webp"
+  },
+  {
+    src: "videos/timelapse-2.mp4",
+    poster: "videos/timelapse-poster-2.webp"
+  },
+  {
+    src: "videos/timelapse-3.mp4",
+    poster: "videos/timelapse-poster-3.webp"
+  },
+  {
+    src: "videos/timelapse-4.mp4",
+    poster: "videos/timelapse-poster-4.webp"
+  },
+  {
+    src: "videos/timelapse-5.mp4",
+    poster: "videos/timelapse-poster-5.webp"
+  }
+];
+
 // Preload all variant images so crossfading never flashes blank
 function preloadVariants() {
   artworks.forEach((art) => {
@@ -171,6 +195,20 @@ function renderGallery() {
       });
     }
 
+    // Scroll cue on the first artwork only
+    if (artIndex === 0) {
+      const cue = document.createElement("div");
+      cue.id = "scroll-cue";
+      cue.className = "scroll-cue";
+      cue.setAttribute("aria-hidden", "true");
+      cue.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      `;
+      section.appendChild(cue);
+    }
+
     section.appendChild(stage);
     fragment.appendChild(section);
   });
@@ -241,10 +279,65 @@ function setupThemeToggle() {
   });
 }
 
-// Setup timelapse video autoplay on scroll and tap pause/play
+// Setup scroll cue removal when scrolling past ~40px
+function setupScrollCue() {
+  const cue = document.getElementById("scroll-cue");
+  if (!cue) return;
+
+  const onScroll = () => {
+    if (window.scrollY > 40) {
+      cue.classList.add("is-hidden");
+      setTimeout(() => {
+        if (cue && cue.parentNode) {
+          cue.parentNode.removeChild(cue);
+        }
+      }, 500);
+      window.removeEventListener("scroll", onScroll);
+    }
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+// Setup timelapse video playlist, preloading, autoplay on scroll and tap pause/play
 function setupTimelapseVideo() {
   const video = document.getElementById("timelapse-video");
-  if (!video) return;
+  if (!video || !timelapses.length) return;
+
+  let currentClipIndex = 0;
+  let nextClipPreloaded = false;
+  let preloaderVideo = null;
+
+  // Preload the next clip's metadata / buffer when the current one is halfway through
+  const preloadNextClip = () => {
+    if (nextClipPreloaded) return;
+    nextClipPreloaded = true;
+    const nextIndex = (currentClipIndex + 1) % timelapses.length;
+    preloaderVideo = document.createElement("video");
+    preloaderVideo.preload = "auto";
+    preloaderVideo.src = timelapses[nextIndex].src;
+  };
+
+  // Monitor playback progress to trigger halfway preloading
+  video.addEventListener("timeupdate", () => {
+    if (video.duration && video.currentTime > video.duration / 2) {
+      preloadNextClip();
+    }
+  });
+
+  // When current clip finishes, advance to the next clip in artwork order (looping back to 1)
+  video.addEventListener("ended", () => {
+    currentClipIndex = (currentClipIndex + 1) % timelapses.length;
+    nextClipPreloaded = false;
+    const nextClip = timelapses[currentClipIndex];
+    video.src = nextClip.src;
+    video.poster = nextClip.poster;
+    video.load();
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {});
+    }
+  });
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -289,6 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderGallery();
   setupThemeToggle();
   setupScrollObserver();
+  setupScrollCue();
   setupTimelapseVideo();
   preloadVariants();
 });
