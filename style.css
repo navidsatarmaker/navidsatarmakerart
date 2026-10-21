@@ -1,0 +1,228 @@
+/* -------------------------------------------------------------
+   CSS Variables & Base Theme
+   Easily customize light/dark neutral tones
+   ------------------------------------------------------------- */
+:root {
+  --bg-light: #f4f1ec;
+  --bg-dark: #16161a;
+  --text-light: rgba(22, 22, 26, 0.4);
+  --text-dark: rgba(244, 241, 236, 0.4);
+  --dot-light: rgba(22, 22, 26, 0.25);
+  --dot-active-light: rgba(22, 22, 26, 0.65);
+  --dot-dark: rgba(244, 241, 236, 0.25);
+  --dot-active-dark: rgba(244, 241, 236, 0.7);
+
+  /* Current active theme colors */
+  --bg-base: var(--bg-light);
+  --bg-current: var(--bg-light);
+  --text-muted: var(--text-light);
+  --dot-color: var(--dot-light);
+  --dot-active: var(--dot-active-light);
+
+  --transition-bg: background-color 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-crossfade: opacity 800ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  --bg-base: var(--bg-dark);
+  --bg-current: var(--bg-dark);
+  --text-muted: var(--text-dark);
+  --dot-color: var(--dot-dark);
+  --dot-active: var(--dot-active-dark);
+}
+
+/* -------------------------------------------------------------
+   Reset & Document Setup
+   ------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg-current);
+  color: var(--text-muted);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: var(--transition-bg);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* -------------------------------------------------------------
+   Temporary Theme Switcher (for previewing light vs dark)
+   ------------------------------------------------------------- */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--text-muted);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  opacity: 0.9;
+  outline: none;
+}
+
+/* -------------------------------------------------------------
+   Gallery Sections
+   ------------------------------------------------------------- */
+.gallery {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.artwork-section {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6vh 6vw;
+  position: relative;
+}
+
+/* Initial gentle fade-in for the very first artwork */
+.artwork-section:first-child .artwork-stage {
+  animation: firstArtworkFadeIn 1.4s ease-out both;
+}
+
+@keyframes firstArtworkFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.artwork-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 90vw;
+  max-height: 82vh;
+  max-height: 82dvh;
+}
+
+/* Clickable container for variants */
+.artwork-container {
+  position: relative;
+  display: grid;
+  place-items: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.artwork-container.is-interactive {
+  cursor: pointer;
+}
+
+/* Images stacked inside grid for smooth crossfades */
+.artwork-img {
+  grid-area: 1 / 1;
+  max-width: 88vw;
+  max-height: 78vh;
+  max-height: 78dvh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition-crossfade);
+  display: block;
+}
+
+.artwork-img.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Faint, subtle variant indicator dots */
+.variant-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1rem;
+  height: 6px;
+  pointer-events: none;
+}
+
+.variant-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--dot-color);
+  transition: background-color 400ms ease, transform 400ms ease;
+}
+
+.variant-dot.is-active {
+  background-color: var(--dot-active);
+  transform: scale(1.25);
+}
+
+/* -------------------------------------------------------------
+   Contact Footer
+   ------------------------------------------------------------- */
+.contact-footer {
+  min-height: 25vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1.5rem 6rem;
+}
+
+.email-link {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.email-link:hover,
+.email-link:focus-visible {
+  opacity: 0.85;
+  outline: none;
+}
+
+/* -------------------------------------------------------------
+   Prefers-reduced-motion
+   ------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .artwork-img,
+  .variant-dot,
+  .artwork-section:first-child .artwork-stage {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,14 @@
+# Original artwork source files
+/[0-9]*.PNG
+/[0-9]*.png
+/[0-9]*.JPG
+/[0-9]*.jpg
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor & Local Configs
+.vscode/
+.idea/
